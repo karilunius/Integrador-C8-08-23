@@ -1,7 +1,10 @@
 // SEGURIDAD: Si no se encuentra en localStorage info del usuario
 // no lo deja acceder a la página, redirigiendo al login inmediatamente.
+const jwt = cargarToken();
 
-
+if(!jwt) {
+  location.replace('/');
+}
 
 /* ------ comienzan las funcionalidades una vez que carga el documento ------ */
 window.addEventListener('load', function () {
