@@ -10,18 +10,21 @@ if(!jwt) {
 window.addEventListener('load', function () {
 
   /* ---------------- variables globales y llamado a funciones ---------------- */
-  
-
-
+  const btnCerrarSesion = document.querySelector('#closeApp');
+  const formCrearTarea = document.querySelector('.nueva-tarea');
+  const inputTarea = document.querySelector('#nuevaTarea');
   /* -------------------------------------------------------------------------- */
   /*                          FUNCIÓN 1 - Cerrar sesión                         */
   /* -------------------------------------------------------------------------- */
 
   btnCerrarSesion.addEventListener('click', function () {
-   
-
-
-
+    
+    const confirma = confirm('Seguro que quiere cerrar sesion?');
+    if(confirma) {
+      localStorage.removeItem('jwt');
+      location.replace('/');
+    }
+    
   });
 
   /* -------------------------------------------------------------------------- */
@@ -29,11 +32,26 @@ window.addEventListener('load', function () {
   /* -------------------------------------------------------------------------- */
 
   function obtenerNombreUsuario() {
-   
+    const parrafo = document.getElementById('nombre_usuario');
+    
+    const URL = 'https://ctd-todo-api.herokuapp.com/v1/users/getMe'
+    const config = {
+      method: 'GET',
+      headers: {
+        authorization: jwt,
+      }
+    }
 
+    fetch(URL, config).then( res => {return res.json()})
+    .then( data => {
+      const { firstName, lastName } = data;
+      parrafo.textContent = firstName + ' ' +lastName;
+    })
 
 
   };
+
+  obtenerNombreUsuario();
 
 
   /* -------------------------------------------------------------------------- */
@@ -42,11 +60,21 @@ window.addEventListener('load', function () {
 
   function consultarTareas() {
     
-    
+    const URL = 'https://ctd-todo-api.herokuapp.com/v1/tasks'
+    const config = {
+      method: 'GET',
+      headers: {
+        authorization: jwt,
+      }
+    }
 
-
-
+    fetch(URL, config).then( res => {return res.json()})
+    .then( data => {
+      console.log(data);
+    })
   };
+
+  consultarTareas()
 
 
   /* -------------------------------------------------------------------------- */
@@ -54,13 +82,28 @@ window.addEventListener('load', function () {
   /* -------------------------------------------------------------------------- */
 
   formCrearTarea.addEventListener('submit', function (event) {
-    
+    event.preventDefault();
+    const nuevaTarea = inputTarea.value;
+    inputTarea.value = '';
+    const data = {
+      description: nuevaTarea,
+      completed: false,
+    }
+    const URL = 'https://ctd-todo-api.herokuapp.com/v1/tasks'
+    const config = {
+      method: 'POST',
+      headers: {
+        authorization: jwt,
+        'Content-Type' : "application/json; charset=UTF-8",
+      }, 
+      body: JSON.stringify(data),
+    }
 
-
-
-
+    fetch(URL, config).then( res => { return res.json()})
+    .then(data => {
+      console.log(data);
+    })
   });
-
 
   /* -------------------------------------------------------------------------- */
   /*                  FUNCIÓN 5 - Renderizar tareas en pantalla                 */
